@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Self-Assessment Hub · Procurement</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --papel:#F5F6F4;
+    --tinta:#131917;
+    --cinza:#5B615E;
+    --linha:#D8DCD7;
+    --branco:#FFFFFF;
+    --petroleo:#0B5A50;
+    --petroleo-claro:#E3EEEB;
+    --c1:#B03434; /* red    */
+    --c2:#5A54C9; /* indigo */
+    --c3:#C65D8B; /* rose   */
+    --c4:#D97A1F; /* orange */
+    --c5:#1F8A70; /* teal   */
+    --c6:#2E7DB3; /* blue   */
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    background:var(--papel);
+    color:var(--tinta);
+    font-family:'IBM Plex Sans',system-ui,sans-serif;
+    font-size:16px;line-height:1.55;
+    padding:20px 16px 64px;
+  }
+  .wrap{max-width:680px;margin:0 auto}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--cinza)}
+  h1,h2,h3{font-family:'Archivo',sans-serif;letter-spacing:-.015em}
+
+  /* ---------- header ---------- */
+  .masthead{padding:8px 0 24px;border-bottom:1px solid var(--linha);margin-bottom:24px}
+  .home-link{display:block;background:none;border:none;cursor:pointer;text-align:left;
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--cinza);padding:0;margin-bottom:10px}
+  .home-link:hover{color:var(--petroleo)}
+  .masthead .mono{display:block;margin-bottom:10px}
+  .masthead h1{font-size:clamp(27px,6vw,38px);font-weight:800;line-height:1.08}
+  .masthead p{margin-top:10px;color:var(--cinza);max-width:56ch}
+
+  /* ---------- home ---------- */
+  .campo-nome{margin:20px 0 20px}
+  .campo-nome label{display:block;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--cinza);margin-bottom:6px}
+  .campo-nome input{
+    width:100%;max-width:340px;padding:12px 14px;font:inherit;
+    background:var(--branco);border:1px solid var(--linha);border-radius:10px;color:var(--tinta);
+  }
+  .campo-nome input:focus{outline:3px solid var(--petroleo);outline-offset:1px;border-color:var(--petroleo)}
+
+  .cards{display:grid;gap:12px;margin:4px 0 22px}
+  .card{
+    display:block;width:100%;text-align:left;font:inherit;color:var(--tinta);cursor:pointer;
+    background:var(--branco);border:1px solid var(--linha);border-left:4px solid var(--linha);
+    border-radius:12px;padding:18px;transition:border-color .12s,background .12s;
+  }
+  .card:hover{border-left-color:var(--petroleo);background:#FBFCFB}
+  .card .idx{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--petroleo)}
+  .card h3{font-size:19px;font-weight:700;margin:6px 0 4px}
+  .card .desc{color:var(--cinza);font-size:14.5px}
+  .card .meta{margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--cinza)}
+  .chip{display:inline-block;margin-top:10px;background:var(--petroleo-claro);color:var(--petroleo);
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;
+    padding:4px 10px;border-radius:999px}
+
+  .sessao{background:var(--branco);border:1px solid var(--linha);border-radius:12px;padding:16px 18px;margin-bottom:22px}
+  .sessao .mono{display:block;margin-bottom:4px}
+  .sessao .linha{font-size:14.5px;margin-top:8px}
+  .sessao .linha b{font-weight:600}
+  .sessao .btn{margin-top:14px}
+
+  .aviso{font-size:13.5px;color:var(--cinza);margin-top:6px}
+
+  .btn{
+    display:inline-block;border:none;cursor:pointer;
+    font-family:'Archivo',sans-serif;font-weight:700;font-size:16px;
+    background:var(--petroleo);color:#fff;border-radius:10px;
+    padding:14px 26px;transition:transform .12s ease,background .12s ease;
+  }
+  .btn:hover{background:#0d6b5f}
+  .btn:active{transform:scale(.98)}
+  .btn:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible{outline:3px solid var(--petroleo);outline-offset:2px}
+  .btn-ghost{background:transparent;color:var(--petroleo);border:1px solid var(--petroleo)}
+  .btn-ghost:hover{background:var(--petroleo-claro)}
+  .btn-mini{font-size:14px;padding:10px 18px}
+
+  /* ---------- progress ---------- */
+  .ticks{display:flex;gap:5px;margin:4px 0 18px}
+  .ticks span{flex:1;height:5px;border-radius:3px;background:var(--linha);transition:background .2s}
+  .ticks span.done{background:var(--petroleo)}
+  .ticks span.atual{background:var(--petroleo);opacity:.35}
+
+  .q-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+  .q-back{background:none;border:none;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--cinza);padding:4px 0}
+  .q-back:hover{color:var(--petroleo)}
+  .q-back[hidden]{display:none}
+
+  .cenario{
+    background:var(--branco);border:1px solid var(--linha);border-radius:12px;
+    padding:22px 20px;margin-bottom:16px;
+  }
+  .cenario h2{font-size:clamp(19px,4.6vw,23px);font-weight:700;line-height:1.3}
+
+  .opcoes{display:grid;gap:10px}
+  .opcao{
+    text-align:left;background:var(--branco);border:1px solid var(--linha);
+    border-left:4px solid var(--linha);border-radius:10px;
+    padding:14px 16px;font:inherit;color:var(--tinta);cursor:pointer;
+    transition:border-color .12s,background .12s,transform .12s;
+  }
+  .opcao:hover{border-left-color:var(--petroleo);background:#FBFCFB}
+  .opcao.selected{border-color:var(--petroleo);border-left-color:var(--petroleo);background:var(--petroleo-claro)}
+  .opcao:disabled{cursor:default;opacity:.75}
+  .opcao:disabled.selected{opacity:1}
+
+  .fade{animation:fade .22s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){
+    .fade{animation:none}
+    *{transition:none!important}
+  }
+
+  /* ---------- results ---------- */
+  .hero{
+    background:var(--branco);border:1px solid var(--linha);border-radius:12px;
+    border-left:6px solid var(--petroleo);
+    padding:24px 22px;margin-bottom:22px;
+  }
+  .hero .mono{display:block;margin-bottom:8px}
+  .hero h2{font-size:clamp(26px,6vw,34px);font-weight:800;line-height:1.1}
+  .hero .lema{font-family:'Archivo',sans-serif;font-weight:600;font-size:17px;margin-top:6px;color:var(--cinza)}
+  .hero p.ess{margin-top:14px}
+  .hero .empate,.hero .secundario{margin-top:12px;font-size:14px;color:var(--cinza)}
+  .hero .secundario b{color:var(--tinta)}
+
+  .bloco{margin-bottom:22px}
+  .bloco > .mono{display:block;margin-bottom:12px}
+
+  .mapa{background:var(--branco);border:1px solid var(--linha);border-radius:12px;padding:18px 14px 12px;display:flex;flex-direction:column;align-items:center;gap:8px}
+  .mapa svg{width:100%;max-width:400px;height:auto}
+  .mapa .eixos-num{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.05em;color:var(--cinza)}
+
+  .versat{background:var(--branco);border:1px solid var(--linha);border-radius:12px;padding:18px 20px;font-size:15px}
+
+  .barra{display:grid;grid-template-columns:118px 1fr 44px;gap:10px;align-items:center;margin-bottom:10px}
+  .barra .nome{font-size:14px;font-weight:600}
+  .barra .trilho{height:12px;background:var(--branco);border:1px solid var(--linha);border-radius:6px;overflow:hidden}
+  .barra .fill{height:100%;border-radius:5px;transition:width .5s ease}
+  .barra .num{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--cinza);text-align:right}
+
+  details{background:var(--branco);border:1px solid var(--linha);border-radius:10px;margin-bottom:10px;overflow:hidden}
+  summary{
+    cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;
+    padding:14px 16px;font-family:'Archivo',sans-serif;font-weight:700;font-size:15px;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary .dot{width:12px;height:12px;border-radius:3px;flex:0 0 auto}
+  summary .lm{font-family:'IBM Plex Sans',sans-serif;font-weight:400;color:var(--cinza);font-size:13.5px;margin-left:auto;text-align:right}
+  summary::after{content:'+';font-family:'IBM Plex Mono',monospace;color:var(--cinza);margin-left:8px}
+  details[open] summary::after{content:'−'}
+  .det-corpo{padding:0 16px 16px;font-size:14.5px;display:grid;gap:10px}
+  .det-corpo p b{font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--petroleo);display:block;margin-bottom:2px}
+
+  .rodape{margin-top:30px;padding-top:18px;border-top:1px solid var(--linha);font-size:13px;color:var(--cinza)}
+  .acoes{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead" id="masthead"></header>
+
+  <!-- HOME -->
+  <section id="home">
+    <div class="campo-nome">
+      <label for="nome">Your name (optional — shown in your results and summary)</label>
+      <input type="text" id="nome" maxlength="40" autocomplete="off" placeholder="e.g., Anna">
+    </div>
+    <div class="cards" id="cards"></div>
+    <div class="sessao" id="sessao" hidden></div>
+    <p class="aviso">Answer with what you <em>actually do</em>, not with what sounds best. There is no right profile — and none of this is a performance review.</p>
+    <p class="rodape">Reference models: buyer profiles inspired by negotiation-style frameworks and procurement competencies; the Thomas-Kilmann conflict-mode model (TKI). Self-perception instruments for reflection and development.</p>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" hidden>
+    <div class="q-head">
+      <span class="mono" id="q-num"></span>
+      <button class="q-back" id="btn-voltar" hidden>&larr; Back</button>
+    </div>
+    <div class="ticks" id="ticks"></div>
+    <div id="q-area"></div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="result" hidden>
+    <div class="hero" id="hero"></div>
+
+    <div class="bloco" id="bloco-mapa" hidden>
+      <span class="mono">Your negotiation map</span>
+      <div class="mapa">
+        <div id="mapa-svg"></div>
+        <div class="eixos-num" id="eixos-num"></div>
+      </div>
+    </div>
+
+    <div class="bloco" id="bloco-radar" hidden>
+      <span class="mono">Your profile radar</span>
+      <div class="mapa">
+        <div id="radar-svg"></div>
+        <div class="eixos-num">Scaled to your most-used profile</div>
+      </div>
+    </div>
+
+    <div class="bloco">
+      <span class="mono">Reading your profile</span>
+      <div class="versat" id="versat"></div>
+    </div>
+
+    <div class="bloco">
+      <span class="mono">How your 15 answers split</span>
+      <div id="barras"></div>
+    </div>
+
+    <div class="bloco">
+      <span class="mono" id="detalhes-titulo"></span>
+      <div id="detalhes"></div>
+    </div>
+
+    <div class="acoes">
+      <button class="btn" id="btn-copiar">Copy summary</button>
+      <button class="btn btn-ghost" id="btn-refazer">Retake</button>
+      <button class="btn btn-ghost" id="btn-inicio">Back to start</button>
+    </div>
+
+    <p class="rodape" id="rodape-quiz"></p>
+  </section>
+
+</div>
+
+<script>
+/* ============================================================
+   THE TWO QUIZZES
+   One shared engine. In each quiz, every style appears the same
+   number of times (10x with 6 styles, 12x with 5).
+   ============================================================ */
+
+const QUIZZES = {
+
+/* ---------- 1. BUYER STYLE ---------- */
+comprador:{
+  id:'comprador', idx:'01', radar:true,
+  titulo:'What is your style as a buyer?',
+  eyebrow:'Self-assessment · Procurement',
+  sub:'15 scenarios from the day-to-day of a procurement portfolio. Answer with what you actually do.',
+  cardTitulo:'Buyer style',
+  cardDesc:'How you run your portfolio: six profiles, from the Negotiator to the process Guardian, and where each one performs best.',
+  cardMeta:'6 profiles · 15 scenarios · 5–7 min · For buyers',
+  unidade:'Scenario', heroLabel:'Dominant profile', apoioLabel:'Backup profile',
+  detalhesTitulo:'The six profiles in detail',
+  copyTitle:'Buyer profile',
+  campos:[['ess','Essence'],['bom','Strengths'],['risco','Blind spot'],['rende','Performs best in'],['dica','Development']],
+  rodape:'Profiles inspired by negotiation-style frameworks (Thomas-Kilmann) and procurement competencies, adapted to the day-to-day of a sourcing team. A self-perception instrument for reflection and development — not a performance review and no substitute for formal feedback.',
+  versat:{
+    concentrado:'<b>A strongly marked profile.</b> More than half of your answers fell into a single style: you have a clear signature, and requesters and suppliers know what to expect. The flip side is the blind spot — situations that call for a different repertoire. Read your dominant profile&rsquo;s blind spot carefully.',
+    versatil:'<b>A versatile profile.</b> You adapt your approach to the type of purchase — the pattern of well-rounded buyers: compete where there is a market, collaborate where there is dependence, run when it is urgent and analyze when the value calls for it.',
+    claro:'<b>A clear style, with backup range.</b> You have a predominant way of working and reach for other styles when it is not enough. The next step is intent: choosing the style based on the purchase, not on habit.'
+  },
+  estilos:{
+    NEG:{nome:'Negotiator', cor:'var(--c1)', lema:'"Everything is negotiable."',
+      ess:'Lives the commercial game: targets, leverage and concessions. Measures success by what is captured at the table.',
+      bom:'Competitive RFQs, contract renewals, savings targets, complacent suppliers.',
+      risco:'Can strain relationships and trade long-term value for a quick win — not every purchase calls for a fight.',
+      rende:'Categories with competitive markets and high savings potential; higher-value negotiations.',
+      dica:'Calibrate the game: learn to spot when collaborating creates more value than competing.'},
+    ANA:{nome:'Analytical', cor:'var(--c2)', lema:'"The data decides."',
+      ess:'Grounds everything: bid leveling, total cost, history, price breakdowns. A good decision is a defensible one.',
+      bom:'Complex purchases, tough bid levelings, contested decisions, baseline building.',
+      risco:'Analysis paralysis: can stall the flow chasing the perfect answer when 80% was enough.',
+      rende:'Technical, high-value categories, multi-item contracts (bills of quantities), market studies.',
+      dica:'Practice timeboxing: decide upfront how much analysis each decision deserves.'},
+    REL:{nome:'Relational', cor:'var(--c3)', lema:'"Buying happens between people."',
+      ess:'Builds bridges: requesters trust them, suppliers serve them first. Solves through relationships what process alone cannot reach.',
+      bom:'Critical and sole-source suppliers, supply crises, difficult internal clients.',
+      risco:'Closeness can become a comfort zone: less competition, tolerance for weak performance and the risk of perceived favoritism.',
+      rende:'Strategic supplier management, ongoing service categories, interfaces with sensitive areas.',
+      dica:'Hold tough conversations without fearing for the relationship — real partnerships can take it.'},
+    EXE:{nome:'Executor', cor:'var(--c4)', lema:'"PO issued, problem solved."',
+      ess:'Pace and volume: queue moving, SLAs on track, backlog under control. Takes pride in unblocking whatever is stuck.',
+      bom:'Spot-buy and high-volume portfolios, emergencies, peak periods (maintenance shutdowns, year-end).',
+      risco:'Speed can steamroll analysis and negotiation: closing fast is not always closing well.',
+      rende:'Spot purchases, maintenance materials, urgent and high-flow demand.',
+      dica:'Separate what is meant to run from what is meant to be thought through — not every PR is a race.'},
+    EST:{nome:'Strategist', cor:'var(--c5)', lema:'"I see the category, not the order."',
+      ess:'Thinks market, consolidation and contracts: every purchase is a move within a bigger plan.',
+      bom:'Category structuring, framework agreements, supplier-base reduction, annual planning.',
+      risco:'Can underestimate operational urgency and feel distant from the day-to-day queue.',
+      rende:'Strategic categories, long-term contracts, spend-restructuring projects.',
+      dica:'Translate strategy into short-term wins the requester can see.'},
+    GUA:{nome:'Guardian', cor:'var(--c6)', lema:'"The process protects everyone."',
+      ess:'Rigor with policy, documentation and approval authority. Their work passes any audit.',
+      bom:'Sensitive purchases, exceptions and single-source justifications, high-scrutiny environments, training newcomers on the ropes.',
+      risco:'Rigidity can turn into red tape: sticking to the letter of the process even when a formal exception is the way.',
+      rende:'Regulated purchases, processes with an audit-finding history, compliance-risk categories.',
+      dica:'Master the well-made exception: compliance also means knowing how to formalize the non-standard.'}
+  },
+  questoes:[
+   {c:'You receive an urgent maintenance PR with an incomplete specification.',
+    o:[{s:'REL',t:'I call the requester directly: a quick conversation solves more than trading emails — and strengthens the relationship.'},
+       {s:'EXE',t:'I don\u2019t let the PR sit: I engage the requester and the likely suppliers in parallel to save time.'},
+       {s:'EST',t:'I check whether there is already a contract or an approved supplier for the item — urgency can\u2019t become recurring one-off buying.'},
+       {s:'GUA',t:'I return it formally with a checklist of what is missing: incomplete specs create wrong POs and audit findings.'}]},
+   {c:'Three proposals arrive for a relevant RFQ. What is your first move?',
+    o:[{s:'ANA',t:'I build the comparison map: I level scope, taxes and freight before drawing any conclusion.'},
+       {s:'EXE',t:'I check whether the best proposal already fits and move it forward — a parked RFQ is a growing backlog.'},
+       {s:'EST',t:'I look beyond price: which proposal best serves the category strategy and the next contracts?'},
+       {s:'GUA',t:'I check that all three meet the formal requirements — documentation, validity, policy — before comparing.'}]},
+   {c:'A supplier requests a 12% price increase, citing rising costs.',
+    o:[{s:'ANA',t:'I ask for the cost breakdown (open book) and benchmark it against the period\u2019s indices before replying.'},
+       {s:'REL',t:'I set up a conversation: I want to understand their moment and find a way out that preserves the partnership.'},
+       {s:'EST',t:'I read the market: if there are alternatives, I use competition; if it is a critical supplier, I think long term.'},
+       {s:'GUA',t:'I check what the contract allows — index, frequency and adjustment trigger. Outside that, I don\u2019t move.'}]},
+   {c:'The requester insists on a specific supplier "because they have always delivered".',
+    o:[{s:'ANA',t:'I show the numbers: I pull price and performance history so the decision is based on data.'},
+       {s:'REL',t:'I acknowledge the preference and bring that supplier into the process, but explain why I need to widen the competition.'},
+       {s:'EXE',t:'I put the nominee in the RFQ alongside two others and let the result decide — without stalling the process.'},
+       {s:'GUA',t:'I explain the policy: sole-sourcing without documented technical justification doesn\u2019t pass. If needed, I formalize the exception.'}]},
+   {c:'You take over a new category, with a supply market you don\u2019t know.',
+    o:[{s:'ANA',t:'I start with the data: spend history, items, prices paid and the category\u2019s ABC curve.'},
+       {s:'REL',t:'I start with the people: I talk to requesters and current suppliers to understand the context.'},
+       {s:'EXE',t:'I take the portfolio running: I learn by executing the demands already in the queue.'},
+       {s:'EST',t:'I study the market: who the players are, how supply is structured and where there is room to consolidate.'}]},
+   {c:'In the final round of an important negotiation, the supplier says: "that is the best price I can do".',
+    o:[{s:'NEG',t:'I don\u2019t take the first "final offer": I bring targets and alternatives, and make clear what they lose by not moving.'},
+       {s:'EXE',t:'If the price fits the budget and the deadline is tight, I close — the cost of delay outweighs the difference.'},
+       {s:'EST',t:'I change the game: I offer volume, contract length or broader scope in exchange for better terms.'},
+       {s:'GUA',t:'I document the exchange and confirm the value fits the approved budget and my authority before closing.'}]},
+   {c:'A critical supplier delays a delivery that hits operations.',
+    o:[{s:'NEG',t:'I use commercial leverage: I demand priority and compensation — penalty, express freight on them, or a discount.'},
+       {s:'REL',t:'I call my contact: good relationships exist for moments like this, and together we find a way out.'},
+       {s:'EST',t:'I treat symptom and cause: I fix the delay and reassess our dependence on that supplier in the category.'},
+       {s:'GUA',t:'I formalize it per the contract: notice, cure period and a record in their performance history.'}]},
+   {c:'A chance appears to bring forward a large purchase at a good discount, but the normal process would take longer.',
+    o:[{s:'NEG',t:'I lock the condition: I negotiate the offer\u2019s validity in writing while the process runs.'},
+       {s:'REL',t:'I align with the requester and the supplier a path that works for both sides without friction.'},
+       {s:'EXE',t:'I speed things up: I mobilize approvals in parallel so we don\u2019t miss the window.'},
+       {s:'GUA',t:'I follow the process: no discount justifies skipping an approval step — if applicable, I pursue the formal exception.'}]},
+   {c:'Your quarterly savings target is at risk.',
+    o:[{s:'NEG',t:'I reopen the portfolio\u2019s most relevant negotiations and go after it, concession by concession.'},
+       {s:'REL',t:'I talk to my best suppliers: true partners help build savings together.'},
+       {s:'EXE',t:'I go for volume: I accelerate the parked RFQs — more processes closed, more savings captured.'},
+       {s:'EST',t:'I look for structural savings: item consolidation, spec review and contracts, not just one-off discounts.'}]},
+   {c:'Two technically equivalent proposals, 3% apart on price.',
+    o:[{s:'NEG',t:'I use the contest: I go back to both and turn those 3% into more — a final round decides.'},
+       {s:'ANA',t:'I go beyond unit price: freight, payment terms, warranty and total cost can flip the result.'},
+       {s:'EST',t:'I choose with the category in mind: which supplier strengthens my position for the next negotiations?'},
+       {s:'GUA',t:'I follow the criterion set in the process: if the rule is lowest leveled price, that is what stands.'}]},
+   {c:'A contract in your portfolio expires in 60 days.',
+    o:[{s:'NEG',t:'I use the expiry as leverage: I open competition and negotiate the renewal under real pressure.'},
+       {s:'ANA',t:'I pull the contract\u2019s performance: prices vs. market, SLA and actual consumption before deciding.'},
+       {s:'EXE',t:'I kick off the renewal right away: the worst case is the contract lapsing and turning into emergency buying.'},
+       {s:'GUA',t:'I check term, possible amendments and policy limits before any move.'}]},
+   {c:'A high-value demand lands with a poorly defined scope from the internal client.',
+    o:[{s:'NEG',t:'I see opportunity: open scope is room to negotiate hard once the specification settles.'},
+       {s:'ANA',t:'I structure the problem: I break the scope into a bill of quantities that allows consistent quoting.'},
+       {s:'EXE',t:'I don\u2019t wait for perfection: I start with what exists and refine with the requester and suppliers in parallel.'},
+       {s:'EST',t:'I raise the discussion: scopes like this call for a contracting-strategy decision — lump sum, framework agreement.'}]},
+   {c:'In the bid leveling, the cheapest supplier has a history of quality problems.',
+    o:[{s:'NEG',t:'I use it in my favor: I confront the cheap bid with the risk and press the runner-up to match the price.'},
+       {s:'ANA',t:'I quantify the risk: failure, rework and downtime costs go into the comparison — cheap can turn out expensive.'},
+       {s:'REL',t:'I talk to the requester and the supplier: I want to know whether the problems were fixed before ruling them out.'},
+       {s:'GUA',t:'I apply the formal criterion: if recorded performance disqualifies them, they are disqualified — and I document it.'}]},
+   {c:'A new, unknown supplier submits a proposal 20% below market.',
+    o:[{s:'NEG',t:'I use it twice: I leverage the proposal to pull the incumbents down, even if I don\u2019t close with the newcomer.'},
+       {s:'ANA',t:'I get suspicious and dig in: I open the price breakdown to see whether it is sustainable or a scope error.'},
+       {s:'REL',t:'I go meet them: I talk to the supplier and assess structure and seriousness before considering it.'},
+       {s:'EST',t:'I read the market move: an aggressive entrant can be the chance to rebalance the category.'}]},
+   {c:'Friday, 4 pm: your queue has 30 PRs and 5 more arrive flagged as urgent.',
+    o:[{s:'NEG',t:'I prioritize by financial impact: highest value and savings potential first.'},
+       {s:'ANA',t:'I sort by criteria: I rank by criticality, deadline and value, and work down the list.'},
+       {s:'REL',t:'I call the urgent PRs\u2019 requesters: I separate real urgency from anxiety and align expectations.'},
+       {s:'EXE',t:'Hands on: I sequence fast and start issuing — a parked PO helps no one.'}]}
+  ]
+},
+
+/* ---------- 2. NEGOTIATION PROFILE (Thomas-Kilmann) ---------- */
+negociacao:{
+  id:'negociacao', idx:'02',
+  titulo:'What is your negotiation profile?',
+  eyebrow:'Self-assessment · Supplier negotiation',
+  sub:'15 real supplier-negotiation situations. Answer with what you would actually do at the table.',
+  cardTitulo:'Negotiation profile',
+  cardDesc:'How you behave at the table: the five Thomas-Kilmann styles, with your position on the assertiveness \u00d7 cooperativeness map.',
+  cardMeta:'5 styles + map · 15 situations · 5–7 min · For everyone',
+  unidade:'Situation', heroLabel:'Dominant style', apoioLabel:'Backup style',
+  detalhesTitulo:'The five styles in detail',
+  copyTitle:'Negotiation profile',
+  campos:[['eixos','Position on the map'],['ess','Essence'],['bom','When to use in procurement'],['risco','Risk'],['dica','In practice']],
+  rodape:'Based on the Thomas-Kilmann conflict-mode model (TKI), applied to supplier negotiation. A self-perception instrument for reflection and development — not a performance review and no substitute for formal feedback.',
+  pesos:{COM:[1,0],COL:[1,1],CON:[0.5,0.5],EVI:[0,0],ACO:[0,1]},
+  versat:{
+    concentrado:'<b>A strongly marked profile.</b> More than half of your answers fell into a single style: suppliers who negotiate with you often already know what to expect — and a predictable negotiator is a mappable one. Read your dominant style\u2019s risk carefully and deliberately train the opposite quadrant of the map.',
+    versatil:'<b>A versatile profile.</b> You spread your answers across several styles — the pattern of good negotiators: compete where there is a market, collaborate where there is mutual dependence, compromise when the clock is ticking, and know when the table is not worth it.',
+    claro:'<b>A clear style, with backup range.</b> You have a negotiation signature and reach for other styles when it is not enough. The next step is intent: before each negotiation, set the style by the situation — the stakes, the relationship, the time and each side\u2019s power — not by habit.'
+  },
+  estilos:{
+    COM:{nome:'Competing', cor:'var(--c1)', lema:'"Winning is the goal."', eixos:'High assertiveness · Low cooperativeness',
+      ess:'Negotiates to win: anchors, leverage, competition and pressure. Firm position, minimal concession.',
+      bom:'Competitive markets with multiple suppliers, spot buys, auctions and final rounds, complacent suppliers, unfounded claims.',
+      risco:'With a sole or strategic supplier, you win the battle and lose the war: squeezed margins turn into poor service, back-of-the-queue treatment and payback at renewal.',
+      dica:'Before squeezing, ask yourself: will I need this person tomorrow? Bargaining power is a resource you spend.'},
+    COL:{nome:'Collaborating', cor:'var(--c5)', lema:'"Grow the pie before splitting it."', eixos:'High assertiveness · High cooperativeness',
+      ess:'Treats negotiation as joint problem-solving: opens up interests, trades variables — scope, lead time, volume, risk — and seeks the deal that creates value for both sides.',
+      bom:'Strategic suppliers and long-term contracts, critical or bottleneck items, legitimate rebalancing claims, development partnerships.',
+      risco:'Takes time and trust: with opportunists, open information becomes ammunition against you. Not every purchase deserves the investment.',
+      dica:'Collaborate with collaborators: test reciprocity with small trades before opening up the whole game.'},
+    CON:{nome:'Compromising', cor:'var(--c4)', lema:'"Everyone gives a little."', eixos:'Moderate assertiveness · Moderate cooperativeness',
+      ess:'Seeks the quick middle ground: split the difference, trade equivalent concessions, unblock and move on.',
+      bom:'Tight deadlines, moderate-stakes deadlocks, balanced power — when the relationship matters, but not enough to justify weeks of joint building.',
+      risco:'The middle of the road can leave value on the table for both sides — and it becomes a habit: suppliers learn to anchor high knowing you will split the difference.',
+      dica:'Before splitting the difference, check whether you can trade variables instead. Compromise should be a conscious shortcut, not a reflex.'},
+    EVI:{nome:'Avoiding', cor:'var(--c2)', lema:'"Not every battle is worth fighting."', eixos:'Low assertiveness · Low cooperativeness',
+      ess:'Knows how to leave the table: postpones, cools things down, escalates or narrows the dispute. Uses time and silence as tools.',
+      bom:'Trivial issues next to what is at stake, heated tempers, missing information or no alternative — negotiating without power is giving the game away.',
+      risco:'Postpone too long and a pending issue becomes a crisis: the unanswered claim turns into a supply stoppage, and the unapplied penalty becomes precedent.',
+      dica:'Avoiding is a tactic, not an outcome: every pause needs a date and a purpose — what changes in your favor while you wait?'},
+    ACO:{nome:'Accommodating', cor:'var(--c3)', lema:'"The relationship is worth more than this round."', eixos:'Low assertiveness · High cooperativeness',
+      ess:'Concedes with intent: prioritizes the relationship and the long term, invests goodwill and collects reciprocity later.',
+      bom:'When the other side is right on the merits, when the issue matters little to you and a lot to them, or when dependence is total and the priority is being the preferred customer.',
+      risco:'Conceding becomes a pattern: suppliers map who always accommodates and anchor ever higher. Goodwill without reciprocity is donated margin.',
+      dica:'Every concession has a price tag: say what you are giving and what you expect in return — even if you collect later.'}
+  },
+  questoes:[
+   {c:'Final round of a large RFQ. The leading supplier is 5% above your target.',
+    o:[{s:'COM',t:'I press with competition: either they hit the target, or the runner-up takes it.'},
+       {s:'COL',t:'I open up: I show my target and ask what we need to change — lead time, lot size, scope — to get there together.'},
+       {s:'CON',t:'I propose splitting the difference: we close halfway and everyone moves on.'},
+       {s:'ACO',t:'I accept the 5%: they are the right supplier, and starting the relationship by squeezing margin can cost dearly later.'}]},
+   {c:'The supplier requests an increase above the contract index and threatens to suspend supply.',
+    o:[{s:'COM',t:'I don\u2019t negotiate under threat: I reject the claim, activate alternatives and make clear that breach has consequences.'},
+       {s:'COL',t:'I sit down with them and we open the numbers on both sides: if the imbalance is real, we build a sustainable solution.'},
+       {s:'CON',t:'I negotiate an intermediate percentage with something in return, to unblock things quickly.'},
+       {s:'EVI',t:'I don\u2019t respond in the heat: I ask for the claim in writing for analysis and buy time while I assess the real stoppage risk.'}]},
+   {c:'A strategic, sole-qualified supplier fails — and you are entitled to a contractual penalty.',
+    o:[{s:'COL',t:'I use the episode to renegotiate the relationship: I trade the penalty for concrete improvement commitments and guarantees.'},
+       {s:'CON',t:'I apply part of the penalty and convert the rest into a discount or credit — a signal without a rupture.'},
+       {s:'EVI',t:'I keep the card up my sleeve: I formally register the right but don\u2019t trigger it now — it may be worth more at renewal.'},
+       {s:'ACO',t:'I waive the penalty: with a sole supplier, charging it now only sours a relationship I depend on.'}]},
+   {c:'The internal client wants extra scope the supplier says does not fit the closed price.',
+    o:[{s:'COM',t:'I hold the price: the extra fits within the current value — the contract gives me leverage, and I use it.'},
+       {s:'CON',t:'I split the extra\u2019s cost between the parties and we move on.'},
+       {s:'EVI',t:'I take the item off the table: I close the original scope now and handle the extra later, as a separate process.'},
+       {s:'ACO',t:'I agree to pay for the extra: the supplier\u2019s claim is fair, and forcing it now would jeopardize the delivery.'}]},
+   {c:'At the annual renewal, the supplier opens the conversation asking for a 15% increase.',
+    o:[{s:'COM',t:'Anchor against anchor: I respond asking for a reduction, with market data on the table, and put the burden on their side.'},
+       {s:'COL',t:'I ignore the anchor and change the conversation: which costs actually rose, and what can we redesign together — volume, mix, logistics?'},
+       {s:'EVI',t:'I don\u2019t react to the number: I pause the conversation, say I will review, and only come back with the full picture.'},
+       {s:'ACO',t:'I signal goodwill: I agree to discuss from their number, prioritizing keeping the partner motivated.'}]},
+   {c:'You find out another unit of your group pays less for the same item, from the same supplier.',
+    o:[{s:'COM',t:'I confront them with the benchmark: I demand immediate parity — there is no justification for me paying more.'},
+       {s:'COL',t:'I turn it into an opportunity: I propose a regional deal that gives them more volume and gives us price parity.'},
+       {s:'CON',t:'I negotiate a gradual convergence: part of the reduction now, the rest over the contract.'},
+       {s:'ACO',t:'I hear them out: different markets and volumes carry different costs; if the rationale holds, I accept the local terms.'}]},
+   {c:'Mid-negotiation, you discover the supplier is desperate to close the quarter.',
+    o:[{s:'COM',t:'I use the pressure in my favor: I squeeze price and terms now — that is when concessions come easy.'},
+       {s:'COL',t:'I use the timing for both: I quickly close what they need and secure, in return, terms that serve me all year.'},
+       {s:'CON',t:'I speed up with a balanced deal: they close the quarter, I take a reasonable discount, no squeezing.'},
+       {s:'EVI',t:'I slow down on purpose: the closer to quarter-end, the stronger my position — I let the clock negotiate for me.'}]},
+   {c:'A negotiation stuck for weeks: neither you nor the supplier budges on price.',
+    o:[{s:'COL',t:'I change the variable: I step away from price and explore scope, lead time, warranty, payment terms — deadlock is rarely just the number.'},
+       {s:'CON',t:'I propose the classic: each side gives half the distance and we wrap it up.'},
+       {s:'EVI',t:'I suspend the table: time away cools tempers and tends to move positions — I reschedule for next week.'},
+       {s:'ACO',t:'I give in on price: if they are the right supplier, I would rather lose this round and collect reciprocity in the execution.'}]},
+   {c:'The supplier misses a deadline agreed verbally, with nothing in the contract.',
+    o:[{s:'COM',t:'I hold them to it as if it were written: a deal is a deal, and I make clear it will have a price in the next rounds.'},
+       {s:'CON',t:'I split the bill: I absorb part of the delay and negotiate partial compensation — formalizing everything this time.'},
+       {s:'EVI',t:'I let this one go: without formal backing, it is not a fight worth having — I start documenting everything and move on.'},
+       {s:'ACO',t:'I accept their explanation and absorb the impact: keeping the climate is worth more than being right.'}]},
+   {c:'A regional monopolist imposes a price list with automatic annual increases.',
+    o:[{s:'COM',t:'I challenge the monopoly: I look at imports, technical substitutes or out-of-region suppliers — and show it at the table.'},
+       {s:'COL',t:'I propose a multi-year contract: volume predictability for them, a price cap and service priority for me.'},
+       {s:'EVI',t:'I don\u2019t pick this fight now: I accept the list short-term, quietly, while I develop alternatives.'},
+       {s:'ACO',t:'I play the game available: with a monopoly, my priority is being the preferred customer, not the toughest one.'}]},
+   {c:'The tender ends with two equivalent finalists. Both call asking for "one last chance".',
+    o:[{s:'COM',t:'An aggressive final round: best offer wins, no guarantees — the contest works for me.'},
+       {s:'COL',t:'I talk to both about value beyond price: whoever builds the best total proposal wins.'},
+       {s:'CON',t:'I split the package: I divide the scope between the two, in exchange for a final discount from each.'},
+       {s:'ACO',t:'I give preference to the long-standing partner: match the best offer and it is theirs — a built relationship breaks the tie.'}]},
+   {c:'Your director asks you to "close it today" on a negotiation you planned to mature for weeks.',
+    o:[{s:'COM',t:'I turn haste into pressure: I give the supplier an ultimatum — final offer by end of day.'},
+       {s:'COL',t:'I am transparent with the supplier: I explain the urgency and propose closing the essentials today, with a joint review in 90 days.'},
+       {s:'CON',t:'I close today on an acceptable middle ground: not the dream deal, but it works for both sides.'},
+       {s:'EVI',t:'I negotiate with my director, not the supplier: I show the cost of closing today and try to buy more time.'}]},
+   {c:'A small supplier, essential to operations, says your payment terms will break them.',
+    o:[{s:'COL',t:'I redesign it together: early payment with a discount, a staggered schedule — a solution that keeps them alive and protects me.'},
+       {s:'CON',t:'I shorten part of the terms in exchange for something in return — each side gives a little.'},
+       {s:'EVI',t:'I take it off the commercial table: I request a formal financial analysis before touching any terms.'},
+       {s:'ACO',t:'I adjust the terms: an essential supplier going under is the worst case — I absorb the financial cost to protect them.'}]},
+   {c:'At signature, the supplier\u2019s legal team returns the contract full of carve-outs on the penalty and warranty clauses.',
+    o:[{s:'COM',t:'I send it back unaccepted: on these points the standard draft is non-negotiable — whoever wants the contract signs it.'},
+       {s:'CON',t:'I negotiate carve-out by carve-out: I give on minor clauses to keep penalty and warranty intact.'},
+       {s:'EVI',t:'I freeze the signature: I escalate to my legal team and let the lawyers settle it between themselves.'},
+       {s:'ACO',t:'I accept the reasonable carve-outs: a good contract is a signed contract — execution will tell if we need to toughen up.'}]},
+   {c:'The supplier realizes you have no qualified alternative and hardens their terms.',
+    o:[{s:'COM',t:'I bluff with conviction: I signal movement with competitors and start a very visible parallel qualification.'},
+       {s:'COL',t:'I acknowledge the interdependence: I propose a deal that gives them predictability and gives me price and SLA protection.'},
+       {s:'EVI',t:'I shrink the table: I negotiate only the indispensable now and postpone the rest until I have a real alternative.'},
+       {s:'ACO',t:'I concede knowingly: I pay the price of dependence today and treat it as the cost of not developing alternatives earlier.'}]}
+  ]
+}
+};
+
+/* ============================================================
+   COMBINED READINGS (buyer profile x negotiation style)
+   ============================================================ */
+
+const COMBOS={
+NEG:{
+ COM:'A savings hunter: maximum commercial pressure. Excellent in open markets; with critical suppliers the wear-and-tear risk is high — switch to collaboration in those cases.',
+ COL:'Negotiates hard while creating value: pressure in a win-win spirit. A valuable combination for big contracts — just don\u2019t let the contest contaminate the joint building.',
+ CON:'Squeezes, then splits the difference: closes fast with reasonable results. Watch out: suppliers learn to anchor high expecting the middle ground.',
+ EVI:'Offensive in the portfolio, selective at the table: picks battles well. Just don\u2019t let a tactical pause become a pending issue — put a date on every postponement.',
+ ACO:'A contradictory mix: pushes hard in the process, gives in at the table. Worth examining when each mode shows up — relationship pressure may be deciding for you.'},
+ANA:{
+ COM:'Tough with data: presses with facts and is hard to rebut. Beware of rigidity — not every deadlock is solved with one more spreadsheet.',
+ COL:'Builds technically solid deals: opens the numbers and redesigns costs with the supplier. Ideal for complex categories; keep an eye on analysis deadlines.',
+ CON:'Levels well and closes in the middle: efficient, but may leave on the table the very value the analysis revealed. Use the data to hold a position, not just to inform.',
+ EVI:'Prudent to the extreme: analyzes and waits for the moment. Strong on risky decisions; the danger is paralysis — set a deadline for every study.',
+ ACO:'Sees the value and concedes anyway: your analysis deserves more assertiveness. Train turning the diagnosis into a position at the table.'},
+REL:{
+ COM:'An unusual profile: nurtures the relationship and squeezes at crunch time. It can work — as long as the pressure is predictable and fair, or the trust you built erodes.',
+ COL:'The procurement diplomat: strong relationships and win-win deals. Perfect for strategic suppliers; keep targets hard so it doesn\u2019t slide into complacency.',
+ CON:'Solves through the bond and the middle ground: agile and frictionless. Watch the pile-up of small concessions — add up their cost per supplier.',
+ EVI:'Protects the relationship by avoiding confrontation: great climate, weak accountability. Practice the tough conversation with a set date — real partnerships can take it.',
+ ACO:'Everything for the relationship: suppliers love it, margins suffer. Set explicit counterparts for every concession — reciprocity is agreed, not hoped for.'},
+EXE:{
+ COM:'Closes fast and under pressure: great for spot buys and urgency. On high-value purchases, slow down — speed plus pressure leaves money on the table.',
+ COL:'Unblocks by building: fast, no scorched earth. A good pair for the day-to-day; reserve real table time for the contracts that demand depth.',
+ CON:'The classic unblocker: quick middle ground and a moving queue. Efficient at volume; mark the five negotiations of the year that deserve a different pace.',
+ EVI:'Does the easy, postpones the hard: the queue moves, the thorny piles up. Block calendar time for the cases you keep pushing back.',
+ ACO:'Closes fast by conceding: the SLA is happy, the savings are not. Before accepting just to wrap up, test a counteroffer — it costs minutes.'},
+EST:{
+ COM:'A strategist with a fist: redesigns the category and imposes terms. Powerful in consolidations; communicate the vision before pressing, or it will read as just a squeeze.',
+ COL:'The category architect: thinks long term and builds structural deals. The ideal combination for framework agreements — mind the short-term delivery too.',
+ CON:'Long vision, pragmatic closing: accepts the middle ground to make the plan viable. Just check that today\u2019s concessions don\u2019t erode tomorrow\u2019s strategy.',
+ EVI:'Patient and calculating: waits for the market\u2019s right moment. Strong on timing; share the timeline with the requester so the wait doesn\u2019t look like inertia.',
+ ACO:'Gives short-term to win long-term: a positioning bet. It works if reciprocity is contracted — put what was agreed on record.'},
+GUA:{
+ COM:'The process hardliner: demands compliance and presses with the rule in hand. Solid on compliance; remember a good contract also needs a good commercial deal.',
+ COL:'Builds armored deals: collaboration with everything documented. Excellent for sensitive contracting — don\u2019t let formality stall the creativity of the trade.',
+ CON:'Concedes within policy: negotiates the concessions the process allows. Safe and predictable; check that "allowed" hasn\u2019t become the ceiling of ambition.',
+ EVI:'Lets the process decide: escalates, formalizes and waits. Minimizes risk; take the table yourself in the cases only negotiation can solve.',
+ ACO:'Concedes as long as it is documented: flexible on merit, rigid on form. Careful: recording a concession doesn\u2019t make it a good one — question the merit too.'}
+};
+
+/* ============================================================
+   ENGINE
+   ============================================================ */
+
+const $=id=>document.getElementById(id);
+let atual=null, ordem=[], respostas=[], idx=0, nomeUser='';
+const resultados={comprador:null, negociacao:null};
+
+function embaralhar(a){
+  const b=a.slice();
+  for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}
+  return b;
+}
+
+function mostrar(tela){
+  ['home','quiz','result'].forEach(t=>$(t).hidden=(t!==tela));
+  window.scrollTo({top:0});
+}
+
+/* ---------- header ---------- */
+function setMasthead(modo){
+  const m=$('masthead');
+  if(modo==='home'){
+    m.innerHTML='<span class="mono">Procurement &middot; Self-assessment kit</span>'+
+      '<h1>Self-Assessment Hub</h1>'+
+      '<p>Two instruments to understand your own way of working: how you run your portfolio and how you negotiate. Pick where to start.</p>';
+  }else{
+    m.innerHTML='<button class="home-link" id="btn-home">&larr; Self-Assessment Hub</button>'+
+      '<span class="mono">'+atual.eyebrow+'</span>'+
+      '<h1>'+atual.titulo+'</h1>'+
+      '<p>'+atual.sub+'</p>';
+    $('btn-home').addEventListener('click',irParaHome);
+  }
+}
+
+/* ---------- home ---------- */
+function renderHome(){
+  setMasthead('home');
+  $('cards').innerHTML=Object.values(QUIZZES).map(qz=>{
+    const r=resultados[qz.id];
+    return '<button type="button" class="card" data-quiz="'+qz.id+'">'+
+      '<span class="idx">'+qz.idx+' &middot; '+qz.cardTitulo+'</span>'+
+      '<h3>'+qz.titulo+'</h3>'+
+      '<p class="desc">'+qz.cardDesc+'</p>'+
+      '<div class="meta">'+qz.cardMeta+'</div>'+
+      (r?'<span class="chip">Done &middot; '+r.domNome+' ('+r.topN+'/15)</span>':'')+
+      '</button>';
+  }).join('');
+  [...document.querySelectorAll('.card')].forEach(c=>{
+    c.addEventListener('click',()=>iniciar(c.dataset.quiz));
+  });
+  renderSessao();
+  mostrar('home');
+}
+
+function renderSessao(){
+  const feitos=Object.values(QUIZZES).filter(qz=>resultados[qz.id]);
+  const box=$('sessao');
+  if(!feitos.length){box.hidden=true;return;}
+  box.hidden=false;
+  const rc=resultados['comprador'], rn=resultados['negociacao'];
+  let combo='';
+  if(rc&&rn){
+    combo='<div class="linha" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--linha)"><b>Combined reading — '+rc.domNome+' × '+rn.domNome+':</b> '+COMBOS[rc.domKey][rn.domKey]+'</div>';
+  }
+  box.innerHTML='<span class="mono">Session summary'+(nomeUser?' &middot; '+nomeUser:'')+'</span>'+
+    feitos.map(qz=>{
+      const r=resultados[qz.id];
+      return '<div class="linha"><b>'+qz.copyTitle+':</b> '+r.domNome+' ('+r.topN+'/15)'+
+        (r.secNome?' &middot; backup '+r.secNome+' ('+r.secN+'/15)':'')+'</div>';
+    }).join('')+combo+
+    '<button class="btn btn-mini" id="btn-copiar-tudo">Copy full summary</button>';
+  $('btn-copiar-tudo').addEventListener('click',()=>{
+    let txt=feitos.map(qz=>resultados[qz.id].resumo).join('\n\n');
+    if(rc&&rn) txt+='\n\nCombined reading — '+rc.domNome+' × '+rn.domNome+': '+COMBOS[rc.domKey][rn.domKey];
+    copiar(txt,$('btn-copiar-tudo'));
+  });
+}
+
+function irParaHome(){renderHome();}
+
+/* ---------- quiz ---------- */
+function iniciar(id){
+  atual=QUIZZES[id];
+  nomeUser=$('nome').value.trim();
+  ordem=atual.questoes.map(q=>({c:q.c,o:embaralhar(q.o)}));
+  respostas=new Array(atual.questoes.length).fill(null);
+  idx=0;
+  setMasthead('quiz');
+  montarTicks();renderQ();
+  mostrar('quiz');
+}
+
+function montarTicks(){
+  $('ticks').innerHTML=atual.questoes.map(()=>'<span></span>').join('');
+}
+
+function atualizarTicks(){
+  [...$('ticks').children].forEach((el,i)=>{
+    el.className = respostas[i]? 'done' : (i===idx? 'atual':'');
+  });
+}
+
+function renderQ(){
+  const q=ordem[idx];
+  $('q-num').textContent=atual.unidade+' '+String(idx+1).padStart(2,'0')+'/15';
+  $('btn-voltar').hidden = idx===0;
+  atualizarTicks();
+  const area=$('q-area');
+  area.innerHTML='';
+  const box=document.createElement('div');
+  box.className='fade';
+  box.innerHTML='<div class="cenario"><h2>'+q.c+'</h2></div>';
+  const ops=document.createElement('div');
+  ops.className='opcoes';
+  q.o.forEach(op=>{
+    const b=document.createElement('button');
+    b.type='button';b.className='opcao';b.textContent=op.t;
+    if(respostas[idx]===op.s) b.classList.add('selected');
+    b.addEventListener('click',()=>escolher(op.s,b,ops));
+    ops.appendChild(b);
+  });
+  box.appendChild(ops);
+  area.appendChild(box);
+}
+
+function escolher(s,btn,ops){
+  respostas[idx]=s;
+  [...ops.children].forEach(b=>{b.classList.remove('selected');b.disabled=true;});
+  btn.classList.add('selected');
+  atualizarTicks();
+  setTimeout(()=>{
+    if(idx<atual.questoes.length-1){idx++;renderQ();window.scrollTo({top:0,behavior:'smooth'});}
+    else{mostrarResultado();}
+  },260);
+}
+
+$('btn-voltar').addEventListener('click',()=>{if(idx>0){idx--;renderQ();}});
+$('btn-refazer').addEventListener('click',()=>iniciar(atual.id));
+$('btn-inicio').addEventListener('click',irParaHome);
+
+/* ---------- results ---------- */
+function nivel(p){return p>=55?'high':(p>=35?'moderate':'low');}
+
+function desenharMapa(assert,coop,cor){
+  const x0=46,y0=16,W=280,H=258;
+  const cx=x0+coop/100*W, cy=y0+(1-assert/100)*H;
+  const meiaX=x0+W/2, meiaY=y0+H/2;
+  let s='<svg viewBox="0 0 350 318" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Assertiveness by cooperativeness map">';
+  s+='<rect x="'+x0+'" y="'+y0+'" width="'+W+'" height="'+H+'" fill="var(--branco)" stroke="var(--linha)" rx="8"/>';
+  s+='<line x1="'+meiaX+'" y1="'+y0+'" x2="'+meiaX+'" y2="'+(y0+H)+'" stroke="var(--linha)" stroke-dasharray="4 4"/>';
+  s+='<line x1="'+x0+'" y1="'+meiaY+'" x2="'+(x0+W)+'" y2="'+meiaY+'" stroke="var(--linha)" stroke-dasharray="4 4"/>';
+  const lbl='font-family:\'IBM Plex Mono\',monospace;font-size:10.5px;letter-spacing:.08em;';
+  s+='<text x="'+(x0+10)+'" y="'+(y0+22)+'" style="'+lbl+'" fill="var(--c1)" opacity=".85">COMPETING</text>';
+  s+='<text x="'+(x0+W-10)+'" y="'+(y0+22)+'" text-anchor="end" style="'+lbl+'" fill="var(--c5)" opacity=".85">COLLABORATING</text>';
+  s+='<text x="'+meiaX+'" y="'+(meiaY+4)+'" text-anchor="middle" style="'+lbl+'" fill="var(--c4)" opacity=".85">COMPROMISING</text>';
+  s+='<text x="'+(x0+10)+'" y="'+(y0+H-12)+'" style="'+lbl+'" fill="var(--c2)" opacity=".85">AVOIDING</text>';
+  s+='<text x="'+(x0+W-10)+'" y="'+(y0+H-12)+'" text-anchor="end" style="'+lbl+'" fill="var(--c3)" opacity=".85">ACCOMMODATING</text>';
+  s+='<text x="'+(x0+W/2)+'" y="308" text-anchor="middle" style="'+lbl+'" fill="var(--cinza)">COOPERATIVENESS &rarr;</text>';
+  s+='<text x="16" y="'+(y0+H/2)+'" text-anchor="middle" style="'+lbl+'" fill="var(--cinza)" transform="rotate(-90 16 '+(y0+H/2)+')">ASSERTIVENESS &rarr;</text>';
+  s+='<circle cx="'+cx+'" cy="'+cy+'" r="13" fill="'+cor+'" opacity=".22"/>';
+  s+='<circle cx="'+cx+'" cy="'+cy+'" r="7" fill="'+cor+'" stroke="#fff" stroke-width="2.5"/>';
+  s+='</svg>';
+  return s;
+}
+
+function desenharRadar(cont,EST,cor){
+  const chaves=Object.keys(EST), n=chaves.length;
+  const cx=190, cy=152, R=96;
+  const maxC=Math.max.apply(null,Object.values(cont))||1;
+  const ang=i=>(i*360/n-90)*Math.PI/180;
+  const pt=(i,r)=>[(cx+Math.cos(ang(i))*r).toFixed(1),(cy+Math.sin(ang(i))*r).toFixed(1)];
+  let s='<svg viewBox="0 0 380 310" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Profile radar">';
+  [0.25,0.5,0.75,1].forEach(f=>{
+    s+='<polygon points="'+chaves.map((k,i)=>pt(i,R*f).join(',')).join(' ')+'" fill="none" stroke="var(--linha)"'+(f<1?' stroke-dasharray="3 3"':'')+'/>';
+  });
+  chaves.forEach((k,i)=>{const p=pt(i,R);s+='<line x1="'+cx+'" y1="'+cy+'" x2="'+p[0]+'" y2="'+p[1]+'" stroke="var(--linha)"/>';});
+  s+='<polygon points="'+chaves.map((k,i)=>pt(i,R*cont[k]/maxC).join(',')).join(' ')+'" fill="'+cor+'" fill-opacity=".16" stroke="'+cor+'" stroke-width="2" stroke-linejoin="round"/>';
+  chaves.forEach((k,i)=>{const p=pt(i,R*cont[k]/maxC);s+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4" fill="'+EST[k].cor+'" stroke="#fff" stroke-width="1.5"/>';});
+  chaves.forEach((k,i)=>{
+    const p=pt(i,R+16), co=Math.cos(ang(i)), si=Math.sin(ang(i));
+    const anc=co>0.25?'start':(co<-0.25?'end':'middle');
+    const dy=si<-0.25?-4:(si>0.25?12:4);
+    s+='<text x="'+p[0]+'" y="'+(parseFloat(p[1])+dy)+'" text-anchor="'+anc+'" style="font-family:\'IBM Plex Sans\',sans-serif;font-size:12px;font-weight:600" fill="var(--tinta)">'+EST[k].nome+'</text>';
+    s+='<text x="'+p[0]+'" y="'+(parseFloat(p[1])+dy+13)+'" text-anchor="'+anc+'" style="font-family:\'IBM Plex Mono\',monospace;font-size:10.5px" fill="var(--cinza)">'+cont[k]+'/15</text>';
+  });
+  s+='</svg>';
+  return s;
+}
+
+function mostrarResultado(){
+  const qz=atual, EST=qz.estilos;
+  const cont={};Object.keys(EST).forEach(k=>cont[k]=0);
+  respostas.forEach(s=>cont[s]++);
+  const ordenado=Object.keys(cont).sort((a,b)=>cont[b]-cont[a]);
+  const top=ordenado[0], topN=cont[top];
+  const empates=ordenado.filter(k=>cont[k]===topN);
+  const sec=ordenado.find(k=>!empates.includes(k));
+  const E=EST[top];
+
+  setMasthead('result');
+
+  /* hero */
+  let h='<span class="mono">Result'+(nomeUser?' &middot; '+nomeUser:'')+' &middot; '+qz.heroLabel+' &middot; '+topN+'/15 answers</span>';
+  h+='<h2>'+E.nome+'</h2><div class="lema">'+E.lema+'</div><p class="ess">'+E.ess+'</p>';
+  if(empates.length>1){
+    h+='<p class="empate">Tied with: <b>'+empates.slice(1).map(k=>EST[k].nome).join(', ')+'</b> — worth reading both profiles below.</p>';
+  }
+  if(sec && cont[sec]>0){
+    h+='<p class="secundario">'+qz.apoioLabel+': <b>'+EST[sec].nome+'</b> ('+cont[sec]+'/15) — where you tend to go when the dominant one doesn\u2019t cut it.</p>';
+  }
+  $('hero').innerHTML=h;
+  $('hero').style.borderLeftColor=E.cor;
+
+  /* map (negotiation quiz only) */
+  let assert=null,coop=null;
+  if(qz.pesos){
+    let a=0,c=0;
+    Object.keys(cont).forEach(k=>{a+=cont[k]*qz.pesos[k][0];c+=cont[k]*qz.pesos[k][1];});
+    assert=Math.round(a/15*100);coop=Math.round(c/15*100);
+    $('mapa-svg').innerHTML=desenharMapa(assert,coop,E.cor);
+    $('eixos-num').textContent='Assertiveness '+assert+'% ('+nivel(assert)+') · Cooperativeness '+coop+'% ('+nivel(coop)+')';
+    $('bloco-mapa').hidden=false;
+  }else{
+    $('bloco-mapa').hidden=true;
+  }
+
+  /* radar (6-style quiz) */
+  if(qz.radar){
+    $('radar-svg').innerHTML=desenharRadar(cont,EST,E.cor);
+    $('bloco-radar').hidden=false;
+  }else{
+    $('bloco-radar').hidden=true;
+  }
+
+  /* versatility */
+  const usados=Object.values(cont).filter(n=>n>=2).length;
+  $('versat').innerHTML = topN>=8 ? qz.versat.concentrado
+    : (usados>=4 && topN<=5 ? qz.versat.versatil : qz.versat.claro);
+  const menor=ordenado[ordenado.length-1], eMenor=EST[menor];
+  if(cont[menor]<topN){
+    $('versat').innerHTML += '<p style="margin-top:10px">Range to grow: the style you used least was <b>'+eMenor.nome+'</b> ('+cont[menor]+'/15). It\u2019s worth training it in the situations where it performs best: '+eMenor.bom.charAt(0).toLowerCase()+eMenor.bom.slice(1)+'</p>';
+  }
+
+  /* bars */
+  $('barras').innerHTML=ordenado.map(k=>{
+    const e=EST[k], pct=Math.round(cont[k]/15*100);
+    return '<div class="barra"><span class="nome">'+e.nome+'</span>'+
+      '<div class="trilho"><div class="fill" style="width:'+pct+'%;background:'+e.cor+'"></div></div>'+
+      '<span class="num">'+cont[k]+'/15</span></div>';
+  }).join('');
+
+  /* details */
+  $('detalhes-titulo').textContent=qz.detalhesTitulo;
+  $('detalhes').innerHTML=ordenado.map((k,i)=>{
+    const e=EST[k];
+    return '<details'+(i===0?' open':'')+'><summary><span class="dot" style="background:'+e.cor+'"></span>'+e.nome+
+      '<span class="lm">'+e.lema+'</span></summary>'+
+      '<div class="det-corpo">'+
+      qz.campos.map(([campo,rotulo])=>'<p><b>'+rotulo+'</b>'+e[campo]+'</p>').join('')+
+      '</div></details>';
+  }).join('');
+
+  /* footer + summary */
+  $('rodape-quiz').textContent=qz.rodape;
+  let resumo=qz.copyTitle+(nomeUser?' — '+nomeUser:'')+'\n'+
+    'Dominant: '+E.nome+' ('+topN+'/15)'+
+    (empates.length>1?' | Tied: '+empates.slice(1).map(k=>EST[k].nome).join(', '):'')+
+    (sec&&cont[sec]>0?' | Backup: '+EST[sec].nome+' ('+cont[sec]+'/15)':'');
+  if(assert!==null) resumo+='\nAssertiveness '+assert+'% · Cooperativeness '+coop+'%';
+  resumo+='\nSplit: '+ordenado.map(k=>EST[k].nome+' '+cont[k]).join(' · ');
+
+  resultados[qz.id]={
+    domKey:top, domNome:E.nome, topN:topN,
+    secNome:(sec&&cont[sec]>0)?EST[sec].nome:null, secN:sec?cont[sec]:0,
+    resumo:resumo
+  };
+
+  mostrar('result');
+}
+
+/* ---------- copy ---------- */
+function copiar(txt,btn){
+  const fim=()=>{
+    const orig=btn.dataset.orig||btn.textContent;
+    btn.dataset.orig=orig;
+    btn.textContent='Copied ✓';
+    setTimeout(()=>{btn.textContent=orig;},2000);
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(fim).catch(()=>{copiarFallback(txt);fim();});
+  }else{copiarFallback(txt);fim();}
+}
+function copiarFallback(txt){
+  const ta=document.createElement('textarea');
+  ta.value=txt;document.body.appendChild(ta);
+  ta.select();document.execCommand('copy');ta.remove();
+}
+
+$('btn-copiar').addEventListener('click',()=>{
+  if(atual && resultados[atual.id]) copiar(resultados[atual.id].resumo,$('btn-copiar'));
+});
+
+/* ---------- boot ---------- */
+renderHome();
+</script>
+</body>
+</html>
