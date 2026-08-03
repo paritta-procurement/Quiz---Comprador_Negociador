@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora Financeira · Compras</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --papel:#F5F6F4;
+    --tinta:#131917;
+    --cinza:#5B615E;
+    --linha:#D8DCD7;
+    --branco:#FFFFFF;
+    --petroleo:#0B5A50;
+    --petroleo-claro:#E3EEEB;
+    --alerta:#B03434;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    background:var(--papel);
+    color:var(--tinta);
+    font-family:'IBM Plex Sans',system-ui,sans-serif;
+    font-size:16px;line-height:1.55;
+    padding:20px 16px 64px;
+  }
+  .wrap{max-width:680px;margin:0 auto}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--cinza)}
+  h1,h2,h3{font-family:'Archivo',sans-serif;letter-spacing:-.015em}
+
+  .masthead{padding:8px 0 24px;border-bottom:1px solid var(--linha);margin-bottom:22px}
+  .masthead .mono{display:block;margin-bottom:10px}
+  .masthead h1{font-size:clamp(27px,6vw,38px);font-weight:800;line-height:1.08}
+  .masthead p{margin-top:10px;color:var(--cinza);max-width:58ch}
+
+  .pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+  .pill{
+    border:1px solid var(--linha);background:var(--branco);color:var(--tinta);
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.04em;text-transform:uppercase;
+    padding:9px 13px;border-radius:999px;cursor:pointer;transition:background .12s,border-color .12s,color .12s;
+  }
+  .pill:hover{border-color:var(--petroleo);color:var(--petroleo)}
+  .pill.ativa{background:var(--petroleo);border-color:var(--petroleo);color:#fff}
+  .pill:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--petroleo);outline-offset:2px}
+
+  .calc{background:var(--branco);border:1px solid var(--linha);border-radius:12px;padding:20px;margin-bottom:22px}
+  .calc h2{font-size:21px;font-weight:700}
+  .calc .desc{color:var(--cinza);font-size:14px;margin:6px 0 16px}
+  .grupo{margin-bottom:14px}
+  .grupo label{display:block;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--cinza);margin-bottom:5px}
+  .grupo input,.grupo textarea,.grupo select{
+    width:100%;padding:11px 13px;font:inherit;font-size:15.5px;
+    background:var(--papel);border:1px solid var(--linha);border-radius:9px;color:var(--tinta);
+  }
+  .grupo textarea{min-height:96px;resize:vertical;font-family:'IBM Plex Mono',monospace;font-size:14px}
+  .duas{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .tres{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  @media (max-width:520px){.tres{grid-template-columns:1fr 1fr}}
+  .sub{font-family:'Archivo',sans-serif;font-weight:700;font-size:14px;margin:16px 0 10px;color:var(--petroleo)}
+
+  .btn{
+    display:inline-block;border:none;cursor:pointer;
+    font-family:'Archivo',sans-serif;font-weight:700;font-size:15px;
+    background:var(--petroleo);color:#fff;border-radius:10px;
+    padding:12px 22px;transition:transform .12s ease,background .12s ease;
+  }
+  .btn:hover{background:#0d6b5f}
+  .btn:active{transform:scale(.98)}
+  .btn-ghost{background:transparent;color:var(--petroleo);border:1px solid var(--petroleo)}
+  .btn-ghost:hover{background:var(--petroleo-claro)}
+  .btn-mini{font-size:13.5px;padding:9px 16px}
+  .acoes-calc{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+
+  .res{
+    margin-top:18px;border:1px solid var(--linha);border-left:5px solid var(--petroleo);
+    border-radius:10px;padding:16px 18px;background:var(--papel);
+  }
+  .res .rotulo{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--cinza);margin-bottom:4px}
+  .res .principal{font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(22px,5.5vw,30px);line-height:1.15}
+  .res .linhas{margin-top:10px;display:grid;gap:5px;font-size:14.5px}
+  .res .linhas b{font-weight:600}
+  .res .nota{margin-top:10px;font-size:13px;color:var(--cinza)}
+  .res.erro{border-left-color:var(--alerta)}
+  .res.erro .principal{font-size:16px;font-weight:600}
+  [hidden]{display:none!important}
+
+  .rodape{margin-top:8px;padding-top:18px;border-top:1px solid var(--linha);font-size:13px;color:var(--cinza)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <span class="mono">Ferramentas · Compras</span>
+    <h1>Calculadora financeira de compras</h1>
+    <p>Os cálculos financeiros do dia a dia da área, em um lugar só. Aceita vírgula ou ponto como decimal.</p>
+  </header>
+
+  <nav class="pills" id="pills">
+    <button class="pill ativa" data-m="m-prop">Propostas &amp; prazos</button>
+    <button class="pill" data-m="m-ant">Antecipação</button>
+    <button class="pill" data-m="m-vpl">VPL &amp; TIR</button>
+    <button class="pill" data-m="m-wacc">WACC</button>
+    <button class="pill" data-m="m-giro">Giro de estoque</button>
+    <button class="pill" data-m="m-eoq">Lote econômico</button>
+    <button class="pill" data-m="m-sav">Saving</button>
+    <button class="pill" data-m="m-tx">Taxas</button>
+  </nav>
+
+  <!-- 1. PROPOSTAS -->
+  <section class="calc" id="m-prop">
+    <h2>Comparador de propostas com prazos diferentes</h2>
+    <p class="desc">Preço menor nem sempre é a melhor compra: traga cada proposta a valor presente com o seu custo de capital e compare no mesmo ponto do tempo.</p>
+    <div class="grupo"><label for="p-taxa">Custo de capital (% ao mês)</label><input id="p-taxa" inputmode="decimal" placeholder="Ex.: 1,2"></div>
+    <div class="sub">Proposta A</div>
+    <div class="duas">
+      <div class="grupo"><label for="p-va">Valor total (R$)</label><input id="p-va" inputmode="decimal" placeholder="Ex.: 100000"></div>
+      <div class="grupo"><label for="p-pa">Prazo de pagamento (dias)</label><input id="p-pa" inputmode="decimal" placeholder="Ex.: 28"></div>
+    </div>
+    <div class="sub">Proposta B</div>
+    <div class="duas">
+      <div class="grupo"><label for="p-vb">Valor total (R$)</label><input id="p-vb" inputmode="decimal" placeholder="Ex.: 101500"></div>
+      <div class="grupo"><label for="p-pb">Prazo de pagamento (dias)</label><input id="p-pb" inputmode="decimal" placeholder="Ex.: 90"></div>
+    </div>
+    <div class="sub">Proposta C (opcional)</div>
+    <div class="duas">
+      <div class="grupo"><label for="p-vc">Valor total (R$)</label><input id="p-vc" inputmode="decimal" placeholder="Deixe em branco se não houver"></div>
+      <div class="grupo"><label for="p-pc">Prazo de pagamento (dias)</label><input id="p-pc" inputmode="decimal" placeholder=""></div>
+    </div>
+    <div class="acoes-calc">
+      <button class="btn" onclick="calcProp()">Calcular</button>
+      <button class="btn btn-ghost btn-mini" onclick="copiarRes('m-prop')">Copiar resultado</button>
+    </div>
+    <div class="res" id="r-prop" hidden></div>
+  </section>
+
+  <!-- 2. ANTECIPAÇÃO -->
+  <section class="calc" id="m-ant" hidden>
+    <h2>Desconto por antecipação de pagamento</h2>
+    <p class="desc">O fornecedor oferece desconto para receber antes. Compensa? Compare a taxa implícita do desconto com o seu custo de capital.</p>
+    <div class="duas">
+      <div class="grupo"><label for="a-valor">Valor da fatura (R$)</label><input id="a-valor" inputmode="decimal" placeholder="Ex.: 250000"></div>
+      <div class="grupo"><label for="a-desc">Desconto oferecido (%)</label><input id="a-desc" inputmode="decimal" placeholder="Ex.: 2"></div>
+    </div>
+    <div class="duas">
+      <div class="grupo"><label for="a-p0">Prazo original (dias)</label><input id="a-p0" inputmode="decimal" placeholder="Ex.: 45"></div>
+      <div class="grupo"><label for="a-p1">Prazo antecipado (dias)</label><input id="a-p1" inputmode="decimal" placeholder="Ex.: 10"></div>
+    </div>
+    <div class="grupo"><label for="a-taxa">Custo de capital (% ao mês)</label><input id="a-taxa" inputmode="decimal" placeholder="Ex.: 1,2"></div>
+    <div class="acoes-calc">
+      <button class="btn" onclick="calcAnt()">Calcular</button>
+      <button class="btn btn-ghost btn-mini" onclick="copiarRes('m-ant')">Copiar resultado</button>
+    </div>
+    <div class="res" id="r-ant" hidden></div>
+  </section>
+
+  <!-- 3. VPL & TIR -->
+  <section class="calc" id="m-vpl" hidden>
+    <h2>VPL, TIR e payback</h2>
+    <p class="desc">Avalie um fluxo de caixa: investimento hoje e retornos ao longo dos períodos. Cole os fluxos direto de uma coluna do Excel, se quiser.</p>
+    <div class="duas">
+      <div class="grupo"><label for="v-taxa">Taxa de desconto (% por período)</label><input id="v-taxa" inputmode="decimal" placeholder="Ex.: 1,2 se períodos mensais"></div>
+      <div class="grupo"><label for="v-t0">Fluxo no período 0 (R$)</label><input id="v-t0" inputmode="decimal" placeholder="Ex.: -500000"></div>
+    </div>
+    <div class="grupo">
+      <label for="v-fluxos">Fluxos dos períodos 1 em diante (um por linha, ou separados por ;)</label>
+      <textarea id="v-fluxos" placeholder="45000&#10;45000&#10;45000&#10;60000"></textarea>
+    </div>
+    <div class="acoes-calc">
+      <button class="btn" onclick="calcVpl()">Calcular</button>
+      <button class="btn btn-ghost btn-mini" onclick="copiarRes('m-vpl')">Copiar resultado</button>
+    </div>
+    <div class="res" id="r-vpl" hidden></div>
+  </section>
+
+  <!-- 4. WACC -->
+  <section class="calc" id="m-wacc" hidden>
+    <h2>WACC — custo médio ponderado de capital</h2>
+    <p class="desc">A taxa mínima de retorno da empresa, ponderando capital próprio e dívida (com o benefício fiscal dos juros). Use o resultado como taxa de desconto nos outros módulos.</p>
+    <div class="duas">
+      <div class="grupo"><label for="w-e">Capital próprio — E (R$)</label><input id="w-e" inputmode="decimal" placeholder="Ex.: 600000000"></div>
+      <div class="grupo"><label for="w-d">Dívida — D (R$)</label><input id="w-d" inputmode="decimal" placeholder="Ex.: 400000000"></div>
+    </div>
+    <div class="tres">
+      <div class="grupo"><label for="w-re">Custo do capital próprio — Re (% a.a.)</label><input id="w-re" inputmode="decimal" placeholder="Ex.: 16"></div>
+      <div class="grupo"><label for="w-rd">Custo da dívida — Rd (% a.a.)</label><input id="w-rd" inputmode="decimal" placeholder="Ex.: 12"></div>
+      <div class="grupo"><label for="w-ir">Alíquota de IR/CSLL (%)</label><input id="w-ir" inputmode="decimal" placeholder="Ex.: 34"></div>
+    </div>
+    <div class="acoes-calc">
+      <button class="btn" onclick="calcWacc()">Calcular</button>
+      <button class="btn btn-ghost btn-mini" onclick="copiarRes('m-wacc')">Copiar resultado</button>
+    </div>
+    <div class="res" id="r-wacc" hidden></div>
+  </section>
+
+  <!-- 5. GIRO -->
+  <section class="calc" id="m-giro" hidden>
+    <h2>Giro e cobertura de estoque</h2>
+    <p class="desc">Quantas vezes o estoque gira no ano e quantos dias de consumo ele representa — o termômetro do capital parado no almoxarifado.</p>
+    <div class="duas">
+      <div class="grupo"><label for="g-cmv">CMV / consumo anual (R$)</label><input id="g-cmv" inputmode="decimal" placeholder="Ex.: 12000000"></div>
+      <div class="grupo"><label for="g-est">Estoque médio (R$)</label><input id="g-est" inputmode="decimal" placeholder="Ex.: 3000000"></div>
+    </div>
+    <div class="acoes-calc">
+      <button class="btn" onclick="calcGiro()">Calcular</button>
+      <button class="btn btn-ghost btn-mini" onclick="copiarRes('m-giro')">Copiar resultado</button>
+    </div>
+    <div class="res" id="r-giro" hidden></div>
+  </section>
+
+  <!-- 6. EOQ -->
+  <section class="calc" id="m-eoq" hidden>
+    <h2>Lote econômico de compra (EOQ)</h2>
+    <p class="desc">O tamanho de lote que minimiza a soma do custo de pedir com o custo de manter estoque.</p>
+    <div class="tres">
+      <div class="grupo"><label for="e-d">Demanda anual (unidades)</label><input id="e-d" inputmode="decimal" placeholder="Ex.: 24000"></div>
+      <div class="grupo"><label for="e-s">Custo por pedido (R$)</label><input id="e-s" inputmode="decimal" placeholder="Ex.: 180"></div>
+      <div class="grupo"><label for="e-h">Custo de manter 1 un/ano (R$)</label><input id="e-h" inputmode="decimal" placeholder="Ex.: 4,50"></div>
+    </div>
+    <div class="acoes-calc">
+      <button class="btn" onclick="calcEoq()">Calcular</button>
+      <button class="btn btn-ghost btn-mini" onclick="copiarRes('m-eoq')">Copiar resultado</button>
+    </div>
+    <div class="res" id="r-eoq" hidden></div>
+  </section>
+
+  <!-- 7. SAVING -->
+  <section class="calc" id="m-sav" hidden>
+    <h2>Saving da negociação</h2>
+    <p class="desc">Economia sobre o baseline: unitária, percentual e total no volume do período.</p>
+    <div class="tres">
+      <div class="grupo"><label for="s-base">Preço baseline (R$/un)</label><input id="s-base" inputmode="decimal" placeholder="Ex.: 42,80"></div>
+      <div class="grupo"><label for="s-neg">Preço negociado (R$/un)</label><input id="s-neg" inputmode="decimal" placeholder="Ex.: 39,90"></div>
+      <div class="grupo"><label for="s-qtd">Quantidade no período</label><input id="s-qtd" inputmode="decimal" placeholder="Ex.: 18000"></div>
+    </div>
+    <div class="acoes-calc">
+      <button class="btn" onclick="calcSav()">Calcular</button>
+      <button class="btn btn-ghost btn-mini" onclick="copiarRes('m-sav')">Copiar resultado</button>
+    </div>
+    <div class="res" id="r-sav" hidden></div>
+  </section>
+
+  <!-- 8. TAXAS -->
+  <section class="calc" id="m-tx" hidden>
+    <h2>Conversor de taxas equivalentes</h2>
+    <p class="desc">Converta taxas entre mês e ano por juros compostos — a conversão correta, não a multiplicação simples.</p>
+    <div class="duas">
+      <div class="grupo"><label for="t-taxa">Taxa (%)</label><input id="t-taxa" inputmode="decimal" placeholder="Ex.: 1,2"></div>
+      <div class="grupo"><label for="t-dir">Conversão</label>
+        <select id="t-dir">
+          <option value="ma">% ao mês → % ao ano</option>
+          <option value="am">% ao ano → % ao mês</option>
+        </select>
+      </div>
+    </div>
+    <div class="acoes-calc">
+      <button class="btn" onclick="calcTx()">Calcular</button>
+      <button class="btn btn-ghost btn-mini" onclick="copiarRes('m-tx')">Copiar resultado</button>
+    </div>
+    <div class="res" id="r-tx" hidden></div>
+  </section>
+
+  <p class="rodape">Convenções: juros compostos; mês comercial de 30 dias e ano de 360 dias nos prazos. Ferramenta de apoio à decisão — valide premissas e taxas com a sua área financeira.</p>
+
+</div>
+
+<script>
+/* ================= FUNÇÕES PURAS ================= */
+
+function parseNum(v){
+  if(v===null||v===undefined) return NaN;
+  v=String(v).trim();
+  if(!v) return NaN;
+  v=v.replace(/\s/g,'');
+  if(v.indexOf(',')>=0){ v=v.replace(/\./g,'').replace(',','.'); }
+  return parseFloat(v);
+}
+
+function vp(valor,taxaMes,dias){ return valor/Math.pow(1+taxaMes,dias/30); }
+
+function npv(taxa,fluxos){ /* fluxos[0] = t0 */
+  let s=0;
+  for(let t=0;t<fluxos.length;t++) s+=fluxos[t]/Math.pow(1+taxa,t);
+  return s;
+}
+
+function irr(fluxos){
+  const f=r=>npv(r,fluxos);
+  let a=-0.9999, b=null, fa=f(a), passo=0.01;
+  for(let r=a+passo;r<=10.00001;r+=passo){
+    const fr=f(r);
+    if(isFinite(fr)&&isFinite(fa)&&fa*fr<=0){ b=r; break; }
+    a=r; fa=fr;
+  }
+  if(b===null) return null;
+  for(let i=0;i<100;i++){
+    const m=(a+b)/2, fm=f(m);
+    if(fa*fm<=0){ b=m; } else { a=m; fa=fm; }
+  }
+  return (a+b)/2;
+}
+
+function payback(fluxos){ /* retorna período fracionário ou null */
+  let cum=fluxos[0];
+  if(cum>=0) return 0;
+  for(let t=1;t<fluxos.length;t++){
+    const novo=cum+fluxos[t];
+    if(novo>=0 && fluxos[t]>0) return t-1 + (-cum)/fluxos[t];
+    cum=novo;
+  }
+  return null;
+}
+
+function eoq(D,S,H){ return Math.sqrt(2*D*S/H); }
+
+function taxaEquivalente(taxa,deMesParaAno){
+  return deMesParaAno ? Math.pow(1+taxa,12)-1 : Math.pow(1+taxa,1/12)-1;
+}
+
+/* ================= DOM ================= */
+
+const $=id=>document.getElementById(id);
+const fmtBRL=x=>x.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const fmtNum=(x,c=2)=>x.toLocaleString('pt-BR',{minimumFractionDigits:c,maximumFractionDigits:c});
+const fmtPct=(x,c=2)=>fmtNum(x*100,c)+'%';
+
+/* navegação por pílulas */
+const MODULOS=['m-prop','m-ant','m-vpl','m-wacc','m-giro','m-eoq','m-sav','m-tx'];
+document.querySelectorAll('.pill').forEach(p=>{
+  p.addEventListener('click',()=>{
+    document.querySelectorAll('.pill').forEach(x=>x.classList.remove('ativa'));
+    p.classList.add('ativa');
+    MODULOS.forEach(m=>$(m).hidden=(m!==p.dataset.m));
+    window.scrollTo({top:0});
+  });
+});
+
+function mostrarRes(modId,rotulo,principal,linhas,nota,copyText){
+  const r=$('r-'+modId.split('m-')[1]);
+  r.classList.remove('erro');
+  r.innerHTML='<div class="rotulo">'+rotulo+'</div>'+
+    '<div class="principal">'+principal+'</div>'+
+    (linhas&&linhas.length?'<div class="linhas">'+linhas.map(l=>'<div>'+l+'</div>').join('')+'</div>':'')+
+    (nota?'<div class="nota">'+nota+'</div>':'');
+  r.hidden=false;
+  r.dataset.copy=copyText||'';
+}
+
+function mostrarErro(modId,msg){
+  const r=$('r-'+modId.split('m-')[1]);
+  r.classList.add('erro');
+  r.innerHTML='<div class="rotulo">Verifique os dados</div><div class="principal">'+msg+'</div>';
+  r.hidden=false;
+  r.dataset.copy='';
+}
+
+function copiarRes(modId){
+  const r=$('r-'+modId.split('m-')[1]);
+  const txt=r&&!r.hidden?(r.dataset.copy||''):'';
+  if(!txt) return;
+  const ok=()=>{};
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(ok).catch(()=>{fallbackCopy(txt);});
+  }else{fallbackCopy(txt);}
+}
+function fallbackCopy(txt){
+  const ta=document.createElement('textarea');
+  ta.value=txt;document.body.appendChild(ta);
+  ta.select();document.execCommand('copy');ta.remove();
+}
+
+/* 1. Propostas */
+function calcProp(){
+  const i=parseNum($('p-taxa').value)/100;
+  const props=[];
+  [['A','p-va','p-pa'],['B','p-vb','p-pb'],['C','p-vc','p-pc']].forEach(([n,cv,cp])=>{
+    const v=parseNum($(cv).value), p=parseNum($(cp).value);
+    if(isFinite(v)&&v>0&&isFinite(p)&&p>=0) props.push({n,v,p});
+  });
+  if(!isFinite(i)||i<0) return mostrarErro('m-prop','Informe o custo de capital (% a.m.).');
+  if(props.length<2) return mostrarErro('m-prop','Preencha valor e prazo de pelo menos duas propostas.');
+  props.forEach(x=>x.vp=vp(x.v,i,x.p));
+  props.sort((a,b)=>a.vp-b.vp);
+  const melhor=props[0], segundo=props[1];
+  const linhas=props.map(x=>'Proposta <b>'+x.n+'</b>: '+fmtBRL(x.v)+' em '+fmtNum(x.p,0)+' dias → VP <b>'+fmtBRL(x.vp)+'</b>');
+  const dif=segundo.vp-melhor.vp;
+  linhas.push('Vantagem da melhor sobre a 2ª: <b>'+fmtBRL(dif)+'</b> ('+fmtPct(dif/segundo.vp)+')');
+  mostrarRes('m-prop','Melhor proposta a valor presente','Proposta '+melhor.n+' — '+fmtBRL(melhor.vp),linhas,
+    'Custo de capital de '+fmtNum(i*100)+'% a.m.; mês comercial de 30 dias. Menor VP vence.',
+    'Comparador de propostas (custo de capital '+fmtNum(i*100)+'% a.m.)\n'+
+    props.map(x=>'Proposta '+x.n+': '+fmtBRL(x.v)+' em '+fmtNum(x.p,0)+' dias | VP '+fmtBRL(x.vp)).join('\n')+
+    '\nMelhor: Proposta '+melhor.n+' | vantagem sobre a 2ª: '+fmtBRL(dif));
+}
+
+/* 2. Antecipação */
+function calcAnt(){
+  const V=parseNum($('a-valor').value), d=parseNum($('a-desc').value)/100;
+  const p0=parseNum($('a-p0').value), p1=parseNum($('a-p1').value);
+  const im=parseNum($('a-taxa').value)/100;
+  if(![V,d,p0,p1,im].every(isFinite)||V<=0||d<=0||d>=1) return mostrarErro('m-ant','Preencha todos os campos (desconto entre 0 e 100).');
+  if(p0<=p1) return mostrarErro('m-ant','O prazo original precisa ser maior que o prazo antecipado.');
+  const dias=p0-p1;
+  const txImpl=Math.pow(1/(1-d),360/dias)-1;         /* % a.a. implícita do desconto */
+  const ccAno=Math.pow(1+im,12)-1;                    /* custo de capital % a.a. */
+  const vpSem=vp(V,im,p0), vpCom=vp(V*(1-d),im,p1);
+  const ganho=vpSem-vpCom;
+  const vale=ganho>0;
+  mostrarRes('m-ant', vale?'Vale a pena antecipar':'Não vale a pena antecipar',
+    (vale?'Ganho de ':'Perda de ')+fmtBRL(Math.abs(ganho))+' a valor presente',
+    ['Taxa implícita do desconto: <b>'+fmtPct(txImpl)+' a.a.</b> ('+fmtNum(dias,0)+' dias de antecipação)',
+     'Seu custo de capital: <b>'+fmtPct(ccAno)+' a.a.</b> ('+fmtNum(im*100)+'% a.m.)',
+     'VP pagando no prazo ('+fmtNum(p0,0)+'d): '+fmtBRL(vpSem),
+     'VP antecipando com desconto ('+fmtNum(p1,0)+'d): '+fmtBRL(vpCom)],
+    'Regra: antecipe quando a taxa implícita do desconto superar o seu custo de capital.',
+    'Antecipação de pagamento — '+fmtBRL(V)+'\nDesconto '+fmtNum(d*100)+'% | '+fmtNum(p0,0)+'d → '+fmtNum(p1,0)+'d\n'+
+    'Taxa implícita: '+fmtPct(txImpl)+' a.a. | Custo de capital: '+fmtPct(ccAno)+' a.a.\n'+
+    (vale?'VALE ANTECIPAR':'NÃO VALE ANTECIPAR')+' | efeito a VP: '+fmtBRL(ganho));
+}
+
+/* 3. VPL & TIR */
+function calcVpl(){
+  const taxa=parseNum($('v-taxa').value)/100;
+  const t0=parseNum($('v-t0').value);
+  const brutos=$('v-fluxos').value.split(/[\n;]+/).map(x=>x.trim()).filter(x=>x.length);
+  const fluxos=[t0].concat(brutos.map(parseNum));
+  if(!isFinite(taxa)) return mostrarErro('m-vpl','Informe a taxa de desconto por período.');
+  if(fluxos.some(x=>!isFinite(x))||fluxos.length<2) return mostrarErro('m-vpl','Confira o fluxo do período 0 e a lista de fluxos.');
+  const valor=npv(taxa,fluxos);
+  const tir=irr(fluxos);
+  const pbS=payback(fluxos);
+  const desc=fluxos.map((cf,t)=>cf/Math.pow(1+taxa,t));
+  const pbD=payback(desc);
+  const fmtPb=p=>p===null?'não recuperado no horizonte':fmtNum(p,1)+' períodos';
+  mostrarRes('m-vpl', valor>=0?'VPL positivo — cria valor':'VPL negativo — destrói valor', fmtBRL(valor),
+    ['TIR: <b>'+(tir===null?'não encontrada':fmtPct(tir)+' por período')+'</b>'+(tir!==null?' (taxa usada: '+fmtPct(taxa)+')':''),
+     'Payback simples: <b>'+fmtPb(pbS)+'</b>',
+     'Payback descontado: <b>'+fmtPb(pbD)+'</b>',
+     'Períodos no fluxo: '+fmtNum(fluxos.length-1,0)+' (além do período 0)'],
+    'Regra: VPL ≥ 0 (ou TIR ≥ taxa de desconto) aprova o fluxo. Use períodos consistentes com a taxa.',
+    'VPL & TIR (taxa '+fmtPct(taxa)+'/período)\nVPL: '+fmtBRL(valor)+' | TIR: '+(tir===null?'-':fmtPct(tir))+
+    '\nPayback simples: '+fmtPb(pbS)+' | descontado: '+fmtPb(pbD));
+}
+
+/* 4. WACC */
+function calcWacc(){
+  const E=parseNum($('w-e').value), D=parseNum($('w-d').value);
+  const Re=parseNum($('w-re').value)/100, Rd=parseNum($('w-rd').value)/100, IR=parseNum($('w-ir').value)/100;
+  if(![E,D,Re,Rd,IR].every(isFinite)||E<0||D<0||E+D<=0) return mostrarErro('m-wacc','Preencha todos os campos (E + D precisa ser maior que zero).');
+  const total=E+D;
+  const w=(E/total)*Re + (D/total)*Rd*(1-IR);
+  const wMes=Math.pow(1+w,1/12)-1;
+  mostrarRes('m-wacc','WACC',fmtPct(w)+' a.a.',
+    ['Equivalente mensal: <b>'+fmtPct(wMes,3)+' a.m.</b>',
+     'Peso do capital próprio: '+fmtPct(E/total)+' × Re '+fmtPct(Re),
+     'Peso da dívida: '+fmtPct(D/total)+' × Rd '+fmtPct(Rd)+' × (1 − IR '+fmtPct(IR)+')'],
+    'Use o WACC como taxa de desconto no VPL e no comparador de propostas (na versão mensal).',
+    'WACC: '+fmtPct(w)+' a.a. ('+fmtPct(wMes,3)+' a.m.)\nE '+fmtBRL(E)+' | D '+fmtBRL(D)+' | Re '+fmtPct(Re)+' | Rd '+fmtPct(Rd)+' | IR '+fmtPct(IR));
+}
+
+/* 5. Giro */
+function calcGiro(){
+  const cmv=parseNum($('g-cmv').value), est=parseNum($('g-est').value);
+  if(![cmv,est].every(isFinite)||cmv<=0||est<=0) return mostrarErro('m-giro','Informe CMV anual e estoque médio maiores que zero.');
+  const giro=cmv/est;
+  const cobertura=360/giro;
+  mostrarRes('m-giro','Giro de estoque',fmtNum(giro,2)+'x ao ano',
+    ['Cobertura: <b>'+fmtNum(cobertura,0)+' dias</b> de consumo',
+     'Capital médio parado em estoque: <b>'+fmtBRL(est)+'</b>',
+     'Cada 10% de redução do estoque médio liberaria: '+fmtBRL(est*0.10)],
+    'Giro = CMV ÷ estoque médio; cobertura = 360 ÷ giro. Compare com a meta da categoria — giro "bom" varia por tipo de material.',
+    'Giro de estoque: '+fmtNum(giro,2)+'x/ano | cobertura '+fmtNum(cobertura,0)+' dias\nCMV '+fmtBRL(cmv)+' | estoque médio '+fmtBRL(est));
+}
+
+/* 6. EOQ */
+function calcEoq(){
+  const D=parseNum($('e-d').value), S=parseNum($('e-s').value), H=parseNum($('e-h').value);
+  if(![D,S,H].every(isFinite)||D<=0||S<=0||H<=0) return mostrarErro('m-eoq','Informe demanda, custo por pedido e custo de manter, todos maiores que zero.');
+  const q=eoq(D,S,H);
+  const pedidos=D/q, intervalo=360/pedidos;
+  const custo=(D/q)*S+(q/2)*H;
+  mostrarRes('m-eoq','Lote econômico',fmtNum(q,0)+' unidades por pedido',
+    ['Pedidos por ano: <b>'+fmtNum(pedidos,1)+'</b> (a cada '+fmtNum(intervalo,0)+' dias)',
+     'Custo total anual no ótimo (pedir + manter): <b>'+fmtBRL(custo)+'</b>'],
+    'EOQ = √(2 × demanda × custo do pedido ÷ custo de manter). Vale como referência — ajuste a lotes mínimos, embalagem e validade.',
+    'EOQ: '+fmtNum(q,0)+' un | '+fmtNum(pedidos,1)+' pedidos/ano (a cada '+fmtNum(intervalo,0)+' dias) | custo ótimo '+fmtBRL(custo));
+}
+
+/* 7. Saving */
+function calcSav(){
+  const base=parseNum($('s-base').value), neg=parseNum($('s-neg').value), qtd=parseNum($('s-qtd').value);
+  if(![base,neg,qtd].every(isFinite)||base<=0||neg<0||qtd<=0) return mostrarErro('m-sav','Informe baseline, preço negociado e quantidade.');
+  const unit=base-neg, pct=unit/base, total=unit*qtd;
+  const positivo=unit>=0;
+  mostrarRes('m-sav', positivo?'Saving da negociação':'Preço acima do baseline',
+    fmtBRL(Math.abs(total))+(positivo?' economizados':' de acréscimo'),
+    ['Por unidade: <b>'+fmtBRL(Math.abs(unit))+'</b> ('+fmtPct(Math.abs(pct))+' '+(positivo?'abaixo':'acima')+' do baseline)',
+     'Baseline '+fmtBRL(base)+' → negociado '+fmtBRL(neg)+' × '+fmtNum(qtd,0)+' un'],
+    positivo?'Documente o baseline usado (último preço pago, orçamento ou média de mercado) — é ele que sustenta o número.':'Se o aumento pedido era maior, a diferença evitada pode ser registrada como cost avoidance.',
+    'Saving: '+fmtBRL(total)+' ('+fmtPct(pct)+')\nBaseline '+fmtBRL(base)+' | negociado '+fmtBRL(neg)+' | qtd '+fmtNum(qtd,0));
+}
+
+/* 8. Taxas */
+function calcTx(){
+  const t=parseNum($('t-taxa').value)/100;
+  const dir=$('t-dir').value;
+  if(!isFinite(t)) return mostrarErro('m-tx','Informe a taxa.');
+  const res=taxaEquivalente(t,dir==='ma');
+  const de=dir==='ma'?'a.m.':'a.a.', para=dir==='ma'?'a.a.':'a.m.';
+  mostrarRes('m-tx','Taxa equivalente',fmtPct(res,dir==='ma'?2:3)+' '+para,
+    ['Entrada: '+fmtPct(t,3)+' '+de+' (juros compostos)'],
+    'Equivalência composta: (1 + taxa)^n − 1. A multiplicação simples por 12 superestima ou subestima a taxa.',
+    'Taxa equivalente: '+fmtPct(t,3)+' '+de+' = '+fmtPct(res,3)+' '+para);
+}
+</script>
+</body>
+</html>
